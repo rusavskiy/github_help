@@ -29,6 +29,6 @@ if (!empty($_POST)) {
     $count = null;
     $returnValue = preg_replace($_POST['pattern'], $_POST['replacement'], $_POST['subject'], -1, $count);
     echo"<pre>-> count: ";print_r($count);echo"</pre>";
-    echo "<pre>-> result: "; print_r($returnValue); echo "</pre>";
+    echo "<pre>-> result: "; print_r(htmlspecialchars($returnValue)); echo "</pre>";
     die;
 }

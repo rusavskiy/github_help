@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print book</title>
+    <meta charset="utf-8">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <h3>Book print</h3>
+    <div class="row">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="all_numbers" class="col-sm-3 control-label">The number of pages in the book:</label>
+                <div class="col-sm-9">
+                    <input type="number" min="0" max="3000" required class="form-control input-sm" id="all_numbers"
+                           placeholder="The number of pages in the book">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="print_numbers" class="col-sm-3 control-label">The number of pages to print:</label>
+                <div class="col-sm-9">
+                    <input type="number" min="0" max="3000" required class="form-control input-sm" id="print_numbers"
+                           placeholder="The number of pages to print">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">The range of the desired pages:</label>
+                <label class="col-sm-1 control-label">From</label>
+                <div class="col-sm-3">
+                    <input type="number" min="0" max="3000" required class="form-control input-sm" id="from"
+                           placeholder="From">
+                </div>
+                <label class="col-sm-1 control-label">To</label>
+                <div class="col-sm-3">
+                    <input type="number" min="0" max="3000" required class="form-control input-sm" id="to"
+                           placeholder="To">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-9">
+            <pre id="view" style="display: none"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    var Book = (function () {
+        var self = {};
+        var all_numbers, print_pages, from, to;
+        var text = '';
+
+        return self = {
+            init: function () {
+                $('#all_numbers,#print_numbers,#from,#to').on('change', function () {
+                    all_numbers = parseInt($('#all_numbers').val(), 10);
+                    print_pages = parseInt($('#print_numbers').val(), 10);
+                    from = parseInt($('#from').val(), 10);
+                    to = parseInt($('#to').val(), 10);
+
+                    self.calculated();
+                });
+            },
+            calculated: function () {
+                text = '';
+
+                if (!all_numbers || !print_pages) {
+                    self.view();
+                    return;
+                }
+                if (print_pages > all_numbers) {
+                    print_pages = all_numbers
+                }
+                if (!from) {
+                    from = 1;
+                }
+                if (to) {
+                    all_numbers = to;
+                }
+
+                print_pages--;
+                var number2 = from;
+                var number1 = number2 + 3;
+                var number3 = 0, number4 = 0;
+                var i = 1, k = 0, e = 0;
+
+                for (; all_numbers > number2;) {
+
+                    text += '--' + i++ + "--\n";
+
+                    //the first side
+                    for (k = 0; k <= print_pages && number2 <= all_numbers; k++) {
+                        if (number1 >= all_numbers) {
+                            text += '__,' + number2;
+                        } else {
+                            text += number1 + ',' + number2;
+                            if (k != print_pages) {
+                                text += ",";
+                            }
+                        }
+                        number1 = number1 + 4;
+                        number2 = number2 + 4;
+                        e = k;
+                        if (k == print_pages) {
+                            text += "\n";
+                        }
+                    }
+
+                    // the second side
+                    for (k = print_pages; k >= 0 && number2 <= all_numbers; k--) {
+                        if (k == print_pages) {
+                            number3 = number1 - 2;
+                            number4 = number2 + 2;
+                        }
+                        number3 = number3 - 4;
+                        number4 = number4 - 4;
+
+                        text += number3 + ',' + number4;
+
+                        if (k != 0) {
+                            text += ",";
+                        } else {
+                            text += "\n";
+                        }
+                    }
+
+
+                    if ((number1 >= all_numbers || number2 >= all_numbers) && k == print_pages) {
+                        text += "\n";
+                        number3 = number1 - 2;
+                        number4 = number2 + 2;
+                        for (; e >= 0; e--) {
+                            number3 = number3 - 4;
+                            number4 = number4 - 4;
+                            if (number3 >= all_numbers) {
+
+                                text += '__,' + number3 + '!,';
+                            } else {
+
+                                text += number3 + ',' + number4;
+
+                                if (e != 0) {
+                                    text += ",";
+                                }
+                            }
+                        }
+                    }
+                }
+
+                self.view();
+            },
+            view: function () {
+                if (text) {
+                    $('#view').text(text).show();
+                } else {
+                    $('#view').hide();
+                }
+            }
+        }
+    })();
+    Book.init();
+</script>
+</body>
+</html>
